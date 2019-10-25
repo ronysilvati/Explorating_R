@@ -3,12 +3,22 @@ R Explorating
 Rony Silva
 25/10/2019
 
-## Define path of Datasets
+### Define path of Datasets
 
 Below i define the path of used datasets
 
 ``` r
 path <- "/home/rony/Documentos/data-analysis/Datasets/"
+```
+
+### Import Dataset
+
+R allows that the developer can import data from a CSV and other
+extensions. CSV files without header can take ignore header using the
+param ‘header=FALSE’. On default, ‘header=TRUE’, like you see below.
+
+``` r
+sorteios = read.csv(paste(path,"sorteios.csv",sep=""),header=TRUE)
 ```
 
 ## R Markdown
