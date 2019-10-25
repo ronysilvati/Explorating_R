@@ -5,6 +5,15 @@ date: "25/10/2019"
 output: github_document
 ---
 
+### Choose Dataset
+The Dataset choose was a dataset that contains all sweepstakes of Mega-Sena (a lotery of Brazil).
+The dataset was downloaded from [Kaggle.com](https://www.kaggle.com).
+Link to download. [https://www.kaggle.com/viniciusbbizarri/sorteiosmegasena](https://www.kaggle.com/viniciusbbizarri/sorteiosmegasena).
+
+```{r}
+library(dplyr)
+```
+
 ### Define path of Datasets
 Below i define the path of used datasets
 ```{r}
@@ -18,27 +27,53 @@ R allows that the developer can import data from a CSV and other extensions. CSV
 sorteios = read.csv(paste(path,"sorteios.csv",sep=""),header=TRUE)
 ```
 
+I'm specialy interested on obtain informations related to winners on one state of Brazil. Bellow, i am start to refine the content of dataset choised.
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+## Explorating dataset through R functions
+
+### str Function
+The use of 'str' function, allows that the structure of an object R can be exposed. This function allows show basically the structure of the assigned object but in resume.
+
+```{r}
+str(sorteios)
 ```
 
-## R Markdown
+### glimpse Function
+The 'glimpse' function is like an 'str', but, basically with the difference that 'glimpse' try to show all structure of assign object.
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+- On the show, rows are attributes and columns are data of these attributes.
+- Glimpse allows that the developer can inform of the second param of function, the limit of data to show. On default, the 'width' param (second param), is the width of the console. 
 
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
-
-```{r cars}
-summary(cars)
+```{r}
+glimpse(sorteios)
 ```
 
-## Including Plots
 
-You can also embed plots, for example:
+Then, how can be visualized, the chosen dataset contains 23 features (columns) and 2278 points of data (rows). 2278 registers of sweepstakes since 1996 to final of 2018.
 
-```{r pressure, echo=FALSE}
-plot(pressure)
+
+### table Function
+
+The function 'table' allows that the developer can show features of dataset using a filter, for instance. 
+One of the features of the dataset 'sorteios', is the 'UF' of winner. How can see bellow.
+R allows summarizing information of a specific feature only using '$' and passing the feature name (in this case, UF) existent on dataset.
+
+```{r}
+table(sorteios$UF)
 ```
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+How can see, SP contains 202 winner, but how i am interested only sweepstakes that contains a
+'#' state, then i decided filter my object sorteios and return only data poins that contains 
+'#' a UF (1600 not contains).'
+
+```{r}
+onlySorteiosWithUF <- filter(sorteios, UF != "")
+```
+
+The result can be viewed bellow... Observe the first column of the table.
+This represent the total data points that contains winners of one state.
+
+```{r}
+table(onlySorteiosWithUF$UF)
+```
+
