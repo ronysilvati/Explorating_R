@@ -2,7 +2,7 @@
 title: "R Explorating"
 author: "Rony Silva"
 date: "25/10/2019"
-output: html_document
+output: github_document
 ---
 
 ## Define path of Datasets
