@@ -3,11 +3,16 @@ R Explorating
 Rony Silva
 25/10/2019
 
+Hi, I am Ronyberque C. Silva, a student of Msc. on Informatics on
+University Federal of Alagoas - UFAL, on Brazil. In this article, I show
+the use of some functions of R.
+
 ### Choose Dataset
 
 The Dataset choose was a dataset that contains all sweepstakes of
 Mega-Sena (a lotery of Brazil). The dataset was downloaded from
-[Kaggle.com](https://www.kaggle.com). Link to download.
+[Kaggle.com](https://www.kaggle.com) and has tunned to this example.
+Link to download.
 <https://www.kaggle.com/viniciusbbizarri/sorteiosmegasena>.
 
 ``` r
@@ -24,6 +29,10 @@ library(dplyr)
     ## The following objects are masked from 'package:base':
     ## 
     ##     intersect, setdiff, setequal, union
+
+``` r
+library(ggplot2)
+```
 
 ### Define path of Datasets
 
@@ -43,9 +52,8 @@ param ‘header=FALSE’. On default, ‘header=TRUE’, like you see below.
 sorteios = read.csv(paste(path,"sorteios.csv",sep=""),header=TRUE)
 ```
 
-I’m specialy interested on obtain informations related to winners on one
-state of Brazil. Bellow, i am start to refine the content of dataset
-choised.
+I’m specialy interested on obtain informations related to winners of
+Sena. Bellow, i am start to refine the content of dataset choised.
 
 ## Explorating dataset through R functions
 
@@ -127,7 +135,7 @@ glimpse(sorteios)
     ## $ Acumulado_Mega_da_Virada <fct> "0,00", "0,00", "0,00", "0,00", "0,00",…
     ## $ X                        <lgl> NA, NA, NA, NA, NA, NA, NA, NA, NA, NA,…
 
-Then, how can be visualized, the chosen dataset contains 23 features
+Then, how can be visualized, the chosen dataset contains 11 features
 (columns) and 2278 points of data (rows). 2278 registers of sweepstakes
 since 1996 to final of 2018.
 
@@ -135,38 +143,98 @@ since 1996 to final of 2018.
 
 The function ‘table’ allows that the developer can show features of
 dataset using a filter, for instance. One of the features of the dataset
-‘sorteios’, is the ‘UF’ of winner. How can see bellow. R allows
+‘sorteios’, is the ‘Ganhadores\_Sena’. How can see bellow. R allows
 summarizing information of a specific feature only using ‘$’ and passing
-the feature name (in this case, UF) existent on dataset.
+the feature name (in this case, Ganhadores\_Sena) existent on dataset.
 
 ``` r
-table(sorteios$UF)
+table(sorteios$Ganhadores_Sena)
 ```
 
     ## 
-    ##        AC   AL   AM   BA   CE   DF   ES   GO   MA   MG   MS   MT   PA   PB 
-    ## 1600    1    5    6   27   18   26   21   15    7   72   13   12   13    7 
-    ##   PE   PI   PR   RJ   RN   RO   RR   RS   SC   SE   SP   TO 
-    ##   19    4   63   71    7    5    1   36   20    6  202    1
+    ##    0    1    2    3    4    5    6    7   15   17 
+    ## 1577  357  170   69   44   10   12    7   15   17
 
-How can see, SP contains 202 winner, but how i am interested only
-sweepstakes that contains a ‘\#’ state, then i decided filter my object
-sorteios and return only data poins that contains ‘\#’ a UF (1600 not
-contains).’
+How can see, many observations contains instances that not have winners,
+and how i am interested only sweepstakes that contains leastwise one
+winner on Sena, then i decided filter my object sorteios and return only
+instances that contains Ganhadores\_Sena \> 0.
 
 ``` r
-onlySorteiosWithUF <- filter(sorteios, UF != "")
+onlyWithSenaWinners <- filter(sorteios, Ganhadores_Sena > 0)
 ```
 
-The result can be viewed bellow… Observe the first column of the table.
-This represent the total data points that contains winners of one state.
+The result can be viewed bellow…
 
 ``` r
-table(onlySorteiosWithUF$UF)
+table(onlyWithSenaWinners$Ganhadores_Sena)
 ```
 
     ## 
-    ##      AC  AL  AM  BA  CE  DF  ES  GO  MA  MG  MS  MT  PA  PB  PE  PI  PR 
-    ##   0   1   5   6  27  18  26  21  15   7  72  13  12  13   7  19   4  63 
-    ##  RJ  RN  RO  RR  RS  SC  SE  SP  TO 
-    ##  71   7   5   1  36  20   6 202   1
+    ##   1   2   3   4   5   6   7  15  17 
+    ## 357 170  69  44  10  12   7  15  17
+
+How can be viewed above, 357 observations had one winner on “Sena”, for
+instance. The representation above stills need detail the total of
+winners, because that filter applied only show the total of instances
+that are framed on the filter. Below a sum of data points to each
+instance is applied.
+
+### Ploting Graphs
+
+On R, the graph plotting is easy to be used. On r-graph-gallery
+(\[<https://www.r-graph-gallery.com/>\]), a lot of graphs and how can be
+used, can be viewed.
+
+Below, I use a graph bar to confront the total of winners on “Sena”
+versus “Quina”.
+
+``` r
+totalWinnersSena = sum(onlyWithSenaWinners$Ganhadores_Sena)
+totalWinnersQuina = sum(onlyWithSenaWinners$Ganhadores_Quina)
+totalWinnersQuadra = sum(onlyWithSenaWinners$Ganhadores_Quadra)
+
+
+barplot(height=c(totalWinnersSena,totalWinnersQuina), names=c("Sena","Quina"), main="Winners of Sena versus Quina")
+```
+
+![](Explorating_R_files/figure-gfm/unnamed-chunk-9-1.png)<!-- --> \#\#\#
+Correlations between Sena, Quina and Quadra The correlation test is used
+to verify the association between two or more variables. Here is used to
+verify the correlation between winners of Sena and
+Quina.
+
+``` r
+  correlation <- cor.test(onlyWithSenaWinners$Ganhadores_Sena, onlyWithSenaWinners$Ganhadores_Quina,  method="kendall")
+  correlation
+```
+
+    ## 
+    ##  Kendall's rank correlation tau
+    ## 
+    ## data:  onlyWithSenaWinners$Ganhadores_Sena and onlyWithSenaWinners$Ganhadores_Quina
+    ## z = 13.728, p-value < 2.2e-16
+    ## alternative hypothesis: true tau is not equal to 0
+    ## sample estimates:
+    ##       tau 
+    ## 0.3924656
+
+Then, how can be viewed above, the correlation between winners of Sena
+and Quina is very low (More winners of quina does not necessarily
+increase the number of seine winners on
+sena).
+
+``` r
+  correlation2 <- cor.test(onlyWithSenaWinners$Ganhadores_Quina, onlyWithSenaWinners$Ganhadores_Quadra,  method="kendall")
+  correlation2
+```
+
+    ## 
+    ##  Kendall's rank correlation tau
+    ## 
+    ## data:  onlyWithSenaWinners$Ganhadores_Quina and onlyWithSenaWinners$Ganhadores_Quadra
+    ## z = 30.614, p-value < 2.2e-16
+    ## alternative hypothesis: true tau is not equal to 0
+    ## sample estimates:
+    ##       tau 
+    ## 0.7755197
